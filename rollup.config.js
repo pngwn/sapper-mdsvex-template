@@ -1,8 +1,8 @@
-import resolve from "rollup-plugin-node-resolve";
+import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
-import commonjs from "rollup-plugin-commonjs";
+import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
-import babel from "rollup-plugin-babel";
+import babel from "@rollup/plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import config from "sapper/config/rollup.js";
 import pkg from "./package.json";
@@ -13,11 +13,9 @@ const dev = mode === "development";
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
 
 const onwarn = (warning, onwarn) =>
-	(warning.code === "CIRCULAR_DEPENDENCY" &&
-		/[/\\]@sapper[/\\]/.test(warning.message)) ||
+	(warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
+	(warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) ||
 	onwarn(warning);
-const dedupe = importee =>
-	importee === "svelte" || importee.startsWith("svelte/");
 
 export default {
 	client: {
@@ -37,7 +35,7 @@ export default {
 			}),
 			resolve({
 				browser: true,
-				dedupe
+				dedupe: ['svelte']
 			}),
 			commonjs(),
 
@@ -83,21 +81,19 @@ export default {
 				"process.env.NODE_ENV": JSON.stringify(mode)
 			}),
 			svelte({
-				extensions: [".svelte", ".svexy"],
+                extensions: [".svelte", ".svexy"],
+                hydratable: true,
 				preprocess: mdsvex(),
 				generate: "ssr",
 				dev
 			}),
 			resolve({
-				dedupe
+				dedupe: ['svelte']
 			}),
 			commonjs()
 		],
-		external: Object.keys(pkg.dependencies).concat(
-			require("module").builtinModules ||
-				Object.keys(process.binding("natives"))
-		),
-
+		external: Object.keys(pkg.dependencies).concat(require('module').builtinModules),
+		preserveEntrySignatures: 'strict',
 		onwarn
 	},
 
@@ -112,8 +108,8 @@ export default {
 			}),
 			commonjs(),
 			!dev && terser()
-		],
-
+        ],
+        preserveEntrySignatures: false,
 		onwarn
 	}
 };
