@@ -11,16 +11,13 @@ The default [Sapper](https://github.com/sveltejs/sapper) template, available for
 [`degit`](https://github.com/Rich-Harris/degit) is a scaffolding tool that lets you create a directory from a branch in a repository. Use either the `rollup` or `webpack` branch in `sapper-template`:
 
 ```bash
-# for Rollup
-npx degit "sveltejs/sapper-template#rollup" my-app
-# for webpack
-npx degit "sveltejs/sapper-template#webpack" my-app
+npx degit "pngwn/sapper-mdsvex-template" my-app
 ```
 
 
 ### Using GitHub templates
 
-Alternatively, you can use GitHub's template feature with the [sapper-template-rollup](https://github.com/sveltejs/sapper-template-rollup) or [sapper-template-webpack](https://github.com/sveltejs/sapper-template-webpack) repositories.
+Alternatively, you can use GitHub's template feature with the [sapper-mdsvex-template](https://github.com/pngwn/sapper-mdsvex-template) repository.
 
 
 ### Running the project
@@ -34,8 +31,6 @@ npm run dev
 ```
 
 Open up [localhost:3000](http://localhost:3000) and start clicking around.
-
-Consult [sapper.svelte.dev](https://sapper.svelte.dev) for help getting started.
 
 
 ## Structure
