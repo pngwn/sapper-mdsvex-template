@@ -17,6 +17,7 @@ const onwarn = (warning, onwarn) =>
 	(warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) ||
 	onwarn(warning);
 
+const extensions = [".svelte", ".svx"];
 export default {
 	client: {
 		input: config.client.input(),
@@ -27,7 +28,7 @@ export default {
 				"process.env.NODE_ENV": JSON.stringify(mode)
 			}),
 			svelte({
-				extensions: [".svelte", ".svexy"],
+				extensions,
 				dev,
 				hydratable: true,
 				emitCss: true,
@@ -41,7 +42,7 @@ export default {
 
 			legacy &&
 				babel({
-					extensions: [".js", ".mjs", ".html", ".svelte"],
+					extensions: [".js", ".mjs", ".html", ...extensions],
 					runtimeHelpers: true,
 					exclude: ["node_modules/@babel/**"],
 					presets: [
@@ -81,7 +82,7 @@ export default {
 				"process.env.NODE_ENV": JSON.stringify(mode)
 			}),
 			svelte({
-                extensions: [".svelte", ".svexy"],
+                extensions,
                 hydratable: true,
 				preprocess: mdsvex(),
 				generate: "ssr",
