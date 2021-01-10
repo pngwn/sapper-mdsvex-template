@@ -6,11 +6,26 @@ import babel from "@rollup/plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import config from "sapper/config/rollup.js";
 import pkg from "./package.json";
+import * as matter from 'gray-matter';
 import { mdsvex } from "mdsvex";
+import {extname, join} from "path";
+import {readdirSync} from "fs";
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+
+function get_routes() {
+	const  blog_path = join(process.cwd(), 'src', 'routes', 'blog');
+	return readdirSync(blog_path).filter(p => extname(p) === ".svx").map(post => {
+		return matter.read(join(blog_path, post))
+	});
+}
+
+const replaceConstants = {
+	'process.env.NODE_ENV': JSON.stringify(mode),
+	'__ROUTES__': JSON.stringify(get_routes()),
+};
 
 const onwarn = (warning, onwarn) =>
 	(warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
@@ -24,8 +39,8 @@ export default {
 		output: config.client.output(),
 		plugins: [
 			replace({
+				...replaceConstants,
 				"process.browser": true,
-				"process.env.NODE_ENV": JSON.stringify(mode)
 			}),
 			svelte({
 				extensions,
@@ -78,8 +93,8 @@ export default {
 		output: config.server.output(),
 		plugins: [
 			replace({
+				...replaceConstants,
 				"process.browser": false,
-				"process.env.NODE_ENV": JSON.stringify(mode)
 			}),
 			svelte({
                 extensions,
@@ -104,8 +119,8 @@ export default {
 		plugins: [
 			resolve(),
 			replace({
+				...replaceConstants,
 				"process.browser": true,
-				"process.env.NODE_ENV": JSON.stringify(mode)
 			}),
 			commonjs(),
 			!dev && terser()
